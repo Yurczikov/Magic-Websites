@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 """Vygeneruje .ics se směnami pro Juriho podle rozpisu ZÁŘÍ 2026.
 
-D = denní směna, N = noční směna (přechází přes půlnoc do dalšího dne).
-Časy směn se mění na jednom místě – v konstantách DEN a NOC.
+R = ranní směna, D = denní směna, N = noční směna (přechází přes půlnoc do dalšího dne).
+Časy směn se mění na jednom místě – v konstantách RANO, DEN a NOC.
 """
 from datetime import datetime, timedelta
 
 YEAR, MONTH = 2026, 9
 
+RANO = ("06:00", "15:00")  # začátek, konec ranní směny
 DEN = ("06:00", "18:00")   # začátek, konec denní směny
 NOC = ("18:00", "06:00")   # začátek, konec noční směny (konec je následující den)
 
 # den v měsíci -> typ směny
 SMENY = {
-    1: "D", 3: "D", 4: "D?", 7: "N", 8: "N",
+    1: "D", 3: "D", 4: "R", 7: "N", 8: "N",
     11: "D", 12: "D", 13: "D", 14: "D",
     16: "N", 17: "N", 21: "N", 22: "N",
     25: "N", 26: "N", 27: "N", 30: "D",
 }
 
-NÁZVY = {"D": "Denní směna", "N": "Noční směna", "D?": "Denní směna (?) – ověřit rozpis"}
+NÁZVY = {"R": "Ranní směna", "D": "Denní směna", "N": "Noční směna"}
+ČASY = {"R": RANO, "D": DEN, "N": NOC}
 
 VTIMEZONE = """BEGIN:VTIMEZONE
 TZID:Europe/Prague
@@ -60,14 +62,15 @@ def main() -> None:
 
     for den in sorted(SMENY):
         typ = SMENY[den]
-        zacatek_h, konec_h = DEN if typ.startswith("D") else NOC
+        zacatek_h, konec_h = ČASY[typ]
         start = datetime(YEAR, MONTH, den, *map(int, zacatek_h.split(":")))
-        konec_den = start.date() if typ.startswith("D") else (start + timedelta(days=1)).date()
+        pres_pulnoc = typ == "N"
+        konec_den = (start + timedelta(days=1)).date() if pres_pulnoc else start.date()
         end = datetime(konec_den.year, konec_den.month, konec_den.day,
                        *map(int, konec_h.split(":")))
         lines += [
             "BEGIN:VEVENT",
-            f"UID:juri-{YEAR}{MONTH:02d}{den:02d}-{typ[0].lower()}@rozpis",
+            f"UID:juri-{YEAR}{MONTH:02d}{den:02d}-{typ.lower()}@rozpis",
             f"DTSTAMP:{now}",
             f"DTSTART;TZID=Europe/Prague:{stamp(start)}",
             f"DTEND;TZID=Europe/Prague:{stamp(end)}",
