@@ -11,9 +11,15 @@
 Časové pásmo Europe/Prague.
 
 ## Import do Apple Calendar
-1. Otevři `.ics` (dvojklik na Macu / v Souborech na iPhonu).
-2. Vyber kalendář, do kterého se má rozpis přidat.
-3. Potvrď import.
+
+**Mac** – Kalendář → Soubor → Importovat… → vyber `.ics` → zvol kalendář.
+
+**iPhone** – soubor nejdřív ulož do Souborů (Sdílet → Uložit do Souborů),
+pak ho v aplikaci Soubory otevři klepnutím → Kalendář nabídne „Přidat vše".
+Alternativa: poslat si `.ics` mailem a klepnout na přílohu v Mailu.
+
+Soubor záměrně neobsahuje `METHOD:PUBLISH` ani `X-WR-CALNAME` – s nimi
+Apple Calendar část importů spolkne bez dotazu, kam se má uložit.
 
 ## Změna časů směn
 Uprav konstanty `RANO`, `DEN` a `NOC` v `generate_juri.py`, pak spusť `python3 generate_juri.py`.

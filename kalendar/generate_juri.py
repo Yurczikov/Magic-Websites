@@ -54,8 +54,6 @@ def main() -> None:
         "VERSION:2.0",
         "PRODID:-//Juri smeny//Zari 2026//CS",
         "CALSCALE:GREGORIAN",
-        "METHOD:PUBLISH",
-        "X-WR-CALNAME:Juri – směny",
         "X-WR-TIMEZONE:Europe/Prague",
         VTIMEZONE,
     ]
